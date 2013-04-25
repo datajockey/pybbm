@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import time, datetime
+import time
 import os
 
 from django.contrib.auth.models import Permission
@@ -10,6 +10,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.test.client import Client
+from django.utils import timezone
 from pybb.templatetags.pybb_tags import pybb_is_topic_unread, pybb_topic_unread, pybb_forum_unread, \
      pybb_get_latest_topics, pybb_get_latest_posts
 
@@ -518,14 +519,14 @@ class FeaturesTest(TestCase, SharedTestModule):
 
     def test_latest_topics(self):
         topic_1 = self.topic
-        topic_1.updated = datetime.datetime.utcnow()
+        topic_1.updated = timezone.now()
         topic_2 = Topic.objects.create(name='topic_2', forum=self.forum, user=self.user)
-        topic_2.updated = datetime.datetime.utcnow() + datetime.timedelta(days=-1)
+        topic_2.updated = timezone.now() + timezone.timedelta(days=-1)
 
         category_2 = Category.objects.create(name='cat2')
         forum_2 = Forum.objects.create(name='forum_2', category=category_2)
         topic_3 = Topic.objects.create(name='topic_3', forum=forum_2, user=self.user)
-        topic_3.updated = datetime.datetime.utcnow() + datetime.timedelta(days=-2)
+        topic_3.updated = timezone.now() + timezone.timedelta(days=-2)
 
         self.login_client()
         response = self.client.get(reverse('pybb:topic_latest'))
