@@ -960,10 +960,8 @@ class PreModerationTest(TestCase, SharedTestModule):
         self.assertNotContains(response, 'test premoderation')
 
         # But visible by superuser (with permissions)
-        user = User.objects.create_user('admin', 'zeus@localhost', 'admin')
-        user.is_superuser = True
-        user.save()
-        client.login(username='admin', password='admin')
+        user = User.objects.create_superuser('pybb_admin', 'pybb_admin@localhost', 'pybb_admin')
+        client.login(username='pybb_admin', password='pybb_admin')
         response = client.get(post.get_absolute_url(), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test premoderation')
@@ -982,10 +980,8 @@ class PreModerationTest(TestCase, SharedTestModule):
         self.assertContains(response, 'test premoderation staff')
 
         # Superuser can moderate
-        user.is_superuser = True
-        user.save()
         admin_client = Client()
-        admin_client.login(username='admin', password='admin')
+        admin_client.login(username='pybb_admin', password='pybb_admin')
         post = Post.objects.get(body='test premoderation')
         response = admin_client.get(reverse('pybb:moderate_post', kwargs={'pk': post.id}), follow=True)
         self.assertEqual(response.status_code, 200)
